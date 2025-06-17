@@ -17,3 +17,7 @@ spring:
 
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
+url:
+  random-photo: https://picsum.photos/
+  id: 200
+  duration-seconds: 5

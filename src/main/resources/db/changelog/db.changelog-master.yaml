@@ -1,3 +1,7 @@
-databaseChangelog:
+databaseChangeLog:
   - include:
       file: db/changelog/changeset/v001-create-order-entity.sql
+  - include:
+      file: db/changelog/changeset/v002-transactional-outbox.sql
+  - include:
+      file: db/changelog/changeset/v003-create-sequence-order-outbox.sql

@@ -6,8 +6,12 @@ import net.az3l1t.Hex.application.dto.OrderRequestDto;
 import net.az3l1t.Hex.application.dto.OrderResponseDto;
 import net.az3l1t.Hex.application.mapper.OrderMapper;
 import net.az3l1t.Hex.domain.model.Order;
+import net.az3l1t.Hex.domain.model.OrderOutbox;
 import net.az3l1t.Hex.domain.port.in.OrderService;
+import net.az3l1t.Hex.domain.port.out.OrderOutboxRepository;
 import net.az3l1t.Hex.domain.port.out.OrderRepository;
+import net.az3l1t.Hex.infrastructure.adapter.persistence.entity.OrderType;
+import net.az3l1t.Hex.infrastructure.adapter.persistence.mapper.OrderOutboxMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,13 +23,21 @@ import java.util.List;
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final OrderOutboxRepository orderOutboxRepository;
 
     @Override
     @Transactional
     public OrderResponseDto createOrder(OrderRequestDto request) {
         Order savingOrder = orderMapper.toOrder(request);
         savingOrder.setCreatedAt(LocalDateTime.now());
-        orderRepository.save(savingOrder);
+        Order savedOne = orderRepository.save(savingOrder);
+
+        OrderOutbox orderOutbox = OrderOutbox.builder()
+                .orderId(savedOne.getId())
+                .orderTypeRealTime(OrderType.NEEDS_TO_SCHEDULE.toString())
+                .build();
+        orderOutboxRepository.save(orderOutbox);
+
         return orderMapper.toDto(savingOrder);
     }
 
