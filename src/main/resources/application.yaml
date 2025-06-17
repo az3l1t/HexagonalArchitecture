@@ -21,3 +21,4 @@ url:
   random-photo: https://picsum.photos/
   id: 200
   duration-seconds: 5
+  retry: 3
