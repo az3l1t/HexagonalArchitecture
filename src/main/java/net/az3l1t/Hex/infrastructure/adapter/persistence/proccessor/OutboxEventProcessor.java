@@ -1,9 +1,12 @@
 package net.az3l1t.Hex.infrastructure.adapter.persistence.proccessor;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.az3l1t.Hex.domain.model.Order;
 import net.az3l1t.Hex.domain.model.OrderOutbox;
 import net.az3l1t.Hex.domain.port.out.OrderOutboxRepository;
+import net.az3l1t.Hex.domain.port.out.OrderRepository;
 import net.az3l1t.Hex.infrastructure.adapter.persistence.entity.OrderType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +24,7 @@ import java.util.List;
 public class OutboxEventProcessor {
     private final RestTemplate restTemplate;
     private final OrderOutboxRepository orderOutboxRepository;
+    private final OrderRepository orderRepository;
 
     @Value("${url.random-photo}")
     private String urlPhotos;
@@ -47,6 +51,19 @@ public class OutboxEventProcessor {
                     orderOutbox.setOrderTypeRealTime(OrderType.SCHEDULED.toString());
                 } else {
                     orderOutbox.setOrderTypeRealTime(OrderType.NEEDS_TO_SCHEDULE.toString());
+                    orderOutbox.setTimesWasError(orderOutbox.getTimesWasError() + 1);
+                    if (orderOutbox.getTimesWasError() >= 3) {
+                        orderOutboxRepository.deleteById(orderOutbox.getOutboxId());
+                        Order order = orderRepository.findById(orderOutbox.getOrderId())
+                                .orElseThrow(() -> new EntityNotFoundException("Order was not found in processing -> " + orderOutbox.getOrderId()));
+                        orderRepository.deleteById(order.getId());
+                        /*
+                            Could send a message to consumer
+                         */
+                    }
+                    log.info("OrderOutbox with id : {} was retried {} times",
+                            orderOutbox.getOutboxId(),
+                            orderOutbox.getTimesWasError());
                 }
             }
         }

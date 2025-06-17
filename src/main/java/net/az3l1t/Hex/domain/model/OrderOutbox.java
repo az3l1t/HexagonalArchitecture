@@ -14,4 +14,5 @@ public class OrderOutbox {
 
     private Long orderId;
     private String orderTypeRealTime;
+    private Long timesWasError;
 }

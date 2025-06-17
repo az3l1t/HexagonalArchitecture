@@ -35,6 +35,7 @@ public class OrderServiceImpl implements OrderService {
         OrderOutbox orderOutbox = OrderOutbox.builder()
                 .orderId(savedOne.getId())
                 .orderTypeRealTime(OrderType.NEEDS_TO_SCHEDULE.toString())
+                .timesWasError(0L)
                 .build();
         orderOutboxRepository.save(orderOutbox);
 

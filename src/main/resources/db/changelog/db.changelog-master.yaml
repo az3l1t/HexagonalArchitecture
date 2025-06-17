@@ -5,3 +5,7 @@ databaseChangeLog:
       file: db/changelog/changeset/v002-transactional-outbox.sql
   - include:
       file: db/changelog/changeset/v003-create-sequence-order-outbox.sql
+  - include:
+      file: db/changelog/changeset/v004-alter-times-error-outbox.sql
+  - include:
+      file: db/changelog/changeset/v005-alter-outbox.sql

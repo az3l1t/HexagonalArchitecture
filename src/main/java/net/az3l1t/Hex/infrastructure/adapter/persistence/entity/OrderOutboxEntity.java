@@ -24,4 +24,8 @@ public class OrderOutboxEntity {
     @Column(nullable = false, name = "order_type_real_time")
     @Enumerated(value = EnumType.STRING)
     private OrderType orderTypeRealTime;
+
+    @Version
+    @Column(nullable = false, name = "times_was_error")
+    private Long timesWasError;
 }

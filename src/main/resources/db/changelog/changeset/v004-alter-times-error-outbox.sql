@@ -1,0 +1,2 @@
+ALTER TABLE orders
+ADD COLUMN times_was_error BIGINT NOT NULL DEFAULT 0;
