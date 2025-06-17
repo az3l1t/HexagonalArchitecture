@@ -35,6 +35,9 @@ public class OutboxEventProcessor {
     @Value("${url.duration-seconds}")
     private Long durationSeconds;
 
+    @Value("${url.retry}")
+    private Long timesRetry;
+
     @Transactional
     @Scheduled(fixedDelay = 5000)
     public void processSchedulingOrder() throws IOException, InterruptedException {
@@ -52,7 +55,7 @@ public class OutboxEventProcessor {
                 } else {
                     orderOutbox.setOrderTypeRealTime(OrderType.NEEDS_TO_SCHEDULE.toString());
                     orderOutbox.setTimesWasError(orderOutbox.getTimesWasError() + 1);
-                    if (orderOutbox.getTimesWasError() >= 3) {
+                    if (orderOutbox.getTimesWasError() >= timesRetry) {
                         orderOutboxRepository.deleteById(orderOutbox.getOutboxId());
                         Order order = orderRepository.findById(orderOutbox.getOrderId())
                                 .orElseThrow(() -> new EntityNotFoundException("Order was not found in processing -> " + orderOutbox.getOrderId()));
