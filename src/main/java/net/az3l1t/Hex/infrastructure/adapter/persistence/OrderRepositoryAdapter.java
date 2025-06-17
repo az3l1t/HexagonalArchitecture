@@ -27,12 +27,15 @@ public class OrderRepositoryAdapter implements OrderRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Order> findById(Long id) {
         return jpaOrderRepository.findById(id)
                 .map(orderEntityMapper::toDomain);
     }
 
+
     @Override
+    @Transactional(readOnly = true)
     public List<Order> findAll() {
         return jpaOrderRepository.findAll()
                 .stream()
@@ -41,11 +44,13 @@ public class OrderRepositoryAdapter implements OrderRepository {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         jpaOrderRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean existsById(Long id) {
         return jpaOrderRepository.existsById(id);
     }
